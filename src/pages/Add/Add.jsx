@@ -12,10 +12,12 @@ const Add = () => {
         description: "",
         price: "",
         category: "Salad"
-    })
+    });
+
+
+      const token = localStorage.getItem("token");
 
     const onChangeHandler = (event) => {
-
         const name = event.target.name;
         const value = event.target.value;
         setData(data => ({ ...data, [name]: value }))
@@ -23,13 +25,26 @@ const Add = () => {
 
     const onSubmitHandler = async (event) => {
         event.preventDefault();
+
+        if (!image) {
+      toast.error("Please upload an image!");
+      return;
+    } 
+
         const formData = new FormData();
         formData.append("name", data.name);
         formData.append("description", data.description);
         formData.append("price", Number(data.price));
         formData.append("category", data.category);
         formData.append("image", image);
-        const response = await axios.post(`${url}/api/food/add`, formData);
+    try {
+      const response = await axios.post(`${url}/api/food/add`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`, // ✅ authMiddleware needs this
+        },
+      });
+
         if (response.data.success) {
             setData({
                 name: "",
@@ -38,11 +53,15 @@ const Add = () => {
                 category: "Salad"
             })
             setImage(false);
-            toast.success(response.data.message)
+            toast.success(response.data.message || "Food item added!");
         } else {
-            toast.error(response.data.message)
+            toast.error(response.data.message || "Failed to add food");
         }
+    }catch (error) {
+      console.error("Error adding food:", error);
+      toast.error("Something went wrong!");
     }
+  };
 
     return (
         <div className='add'>
