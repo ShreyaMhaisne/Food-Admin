@@ -3,8 +3,8 @@ import "./List.css"
 import axios from 'axios'
 import { toast } from 'react-toastify';
 
-const List = () => {
-    const url = "https://food-backendd.vercel.app";
+const List = ({url}) => {
+    // const url = "https://food-backendd.vercel.app";
     const [list, setList] = useState([]);
 
     const fetchList = async () => {

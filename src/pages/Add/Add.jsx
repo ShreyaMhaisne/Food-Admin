@@ -4,8 +4,8 @@ import { assets } from '../../assets/assets'
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const Add = () => {
-    const url = "https://food-backendd.vercel.app";
+const Add = ({url}) => {
+    // const url = "https://food-backendd.vercel.app";
     const [image, setImage] = useState(false);
     const [data, setData] = useState({
         name: "",
@@ -13,10 +13,6 @@ const Add = () => {
         price: "",
         category: "Salad"
     });
-
-
-      const token = localStorage.getItem("token");
-
     const onChangeHandler = (event) => {
         const name = event.target.name;
         const value = event.target.value;
@@ -26,24 +22,34 @@ const Add = () => {
     const onSubmitHandler = async (event) => {
         event.preventDefault();
 
-        if (!image) {
-      toast.error("Please upload an image!");
-      return;
-    } 
 
-        const formData = new FormData();
-        formData.append("name", data.name);
-        formData.append("description", data.description);
-        formData.append("price", Number(data.price));
-        formData.append("category", data.category);
-        formData.append("image", image);
+    if (!image) {
+        toast.error("Please upload an image!");
+        return;
+    }
+
+    // 3️⃣ Check for required fields
+    if (!data.name || !data.description || !data.price) {
+        toast.error("Please fill all fields!");
+        return;
+    }
+
+    // 4️⃣ Prepare FormData
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append("price", Number(data.price));
+    formData.append("category", data.category);
+    formData.append("image", image);
+
+    // 5️⃣ Send Axios request
     try {
-      const response = await axios.post(`${url}/api/food/add`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`, // ✅ authMiddleware needs this
-        },
-      });
+        const response = await axios.post(`${url}/api/food/add`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+                // Authorization: `Bearer ${token}`,
+            },
+        });
 
         if (response.data.success) {
             setData({
@@ -51,17 +57,17 @@ const Add = () => {
                 description: "",
                 price: "",
                 category: "Salad"
-            })
+            });
             setImage(false);
             toast.success(response.data.message || "Food item added!");
         } else {
             toast.error(response.data.message || "Failed to add food");
         }
-    }catch (error) {
-      console.error("Error adding food:", error);
-      toast.error("Something went wrong!");
+    } catch (error) {
+        console.error("Error adding food:", error.response?.data || error);
+        toast.error(error.response?.data?.message || "Something went wrong!");
     }
-  };
+};
 
     return (
         <div className='add'>
