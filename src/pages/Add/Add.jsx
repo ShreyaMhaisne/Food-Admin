@@ -44,10 +44,11 @@ const Add = ({url}) => {
 
     // 5️⃣ Send Axios request
     try {
+            const token = localStorage.getItem("token");
         const response = await axios.post(`${url}/api/food/add`, formData, {
             headers: {
-                "Content-Type": "multipart/form-data",
-                // Authorization: `Bearer ${token}`,
+    
+                Authorization: `Bearer ${token}`,
             },
         });
 
