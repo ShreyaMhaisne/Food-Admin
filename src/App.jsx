@@ -9,7 +9,7 @@ import Login from './pages/Login/Login';
 import { ToastContainer } from 'react-toastify';
 
 const App = () => {
-  const url = "https://food-backendd.vercel.app/";  
+  const url = "https://food-backendd.vercel.app";  
 
   // Check if token exists in localStorage
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
